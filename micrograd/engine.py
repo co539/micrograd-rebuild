@@ -39,6 +39,14 @@ class Value:
 
         return output
 
+    def relu(self):
+        out = Value(0 if self.data < 0 else self.data, (self,), 'ReLU')
+
+        def _backpropagate():
+            self.grad += (out.data > 0) * out.grad
+
+        out._backpropagate= _backpropagate
+
     def backpropagate(self):
         topo = []
         visited = set()
@@ -70,7 +78,7 @@ class Value:
         return self + (-other)
 
     def __rsub__(self, other):
-        return other + (-self)
+        return (-self) + other
 
     def __rmul__(self, other):
         return self * other
